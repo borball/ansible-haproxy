@@ -1,0 +1,69 @@
+global
+    log 127.0.0.1 local0 err
+    maxconn {{ instance.global.maxconn | default(32768) }}
+    chroot  {{ haproxy.sock_location }}/{{ instance.service }}/
+    stats   socket {{ haproxy.sock_location }}/{{ instance.service }}/haproxy.sock mode 0660 level admin process 1
+    user    {{ haproxy.user | default('haproxy') }}
+    group   {{ haproxy.group | default('haproxy') }}
+    daemon
+    spread-checks 3
+
+defaults
+    mode    {{ haproxy.defaults.mode | default('tcp') }}
+    log     global
+    option  tcplog
+    option  dontlognull
+    retries {{ haproxy.defaults.retries | default(2) }}
+    maxconn {{ haproxy.defaults.maxconn | default(8192) }}
+    balance roundrobin
+    timeout connect {{ instance.defaults.timeout.connect | default(3000) }}
+    timeout client  {{ instance.defaults.timeout.client | default(10000) }}
+    timeout server  {{ instance.defaults.timeout.server | default(10000) }}
+
+{% for frontend in lookup('dict', instance.frontend)|sort  %}
+
+frontend frontend-{{ frontend.name }}
+    log global
+    bind {{ frontend.value }}
+    default_backend backend-{{ instance.service }}
+{% endfor %}
+
+backend backend-{{ instance.service }}
+    mode {{ instance.mode | default('http') }}
+    log global
+    balance {{ instance.backend.balance | default('roundrobin') }}
+    fullconn {{ instance.backend.fullconn | default(8192) }}
+{% if instance.mode is undefined or instance.mode == 'http' %}
+    option forwardfor
+    option http-keep-alive
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+{% endif %}
+{% if instance.health is defined %}
+{% for hc in instance.health  %}
+    {{ hc }}
+{% endfor %}
+{% endif %}
+
+{% for server in lookup('dict', instance.backend.pool)|sort  %}
+{% if instance.backend.check is defined %}
+    server {{ server.key }} {{ server.value }} weight 1 maxconn 2048 check {{ instance.backend.check }} inter 10000 rise 3 fall 3
+{% else %}
+    server {{ server.key }} {{ server.value }} weight 1 maxconn 2048 check inter 10000 rise 3 fall 3
+{% endif %}
+{% endfor %}
+
+listen stats
+    bind *:{{ instance.stat }}
+    mode http
+    stats {{ instance.stat.enable | "enable" }}
+    stats uri /
+    stats hide-version
+    stats refresh 10s
+    stats admin if TRUE
+    stats show-legends
+    stats show-desc {{ instance.service }}
+{% for frontend in lookup('dict', instance.frontend)|sort  %}
+    stats scope frontend-{{ frontend.name }}
+{% endfor %}
+    stats scope backend-{{ instance.service }}

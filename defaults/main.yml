@@ -1,2 +1,18 @@
 ---
 # defaults file for haproxy
+haproxy:
+  software: /usr/sbin/haproxy
+  conf: /etc/haproxy/
+  sysconf: /etc/sysconfig/
+  group: haproxy
+  user: haproxy
+  sock_location: /var/lib/haproxy/
+  global:
+    maxconn: 32768
+  defaults:
+    retries: 2
+    maxconn: 8192
+    timeout:
+      connect: 3000
+      client: 10000
+      server: 10000

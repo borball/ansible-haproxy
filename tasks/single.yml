@@ -1,0 +1,13 @@
+---
+- name: Configure HAProxy instance {{ instance.service }}
+  debug:
+    msg: Configure HAProxy instance {{ instance.service }}
+
+- name: Create required folder for {{ instance.service }}
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ haproxy.conf }}/{{ instance.service }}"
+    - "{{ haproxy.sysconf }}/{{ instance.service }}"
+    - "{{ haproxy.sock_location }}/{{ instance.service }}"

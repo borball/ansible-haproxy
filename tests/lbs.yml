@@ -1,0 +1,39 @@
+---
+lbs:
+  lb_service1:
+    hosts:
+      - node1
+      - node2
+    service: lb_service1
+    frontend:
+      endpoint1: 192.168.1.200:8080
+      endpoint2: 172.10.1.200:8080
+    backend:
+      pool:
+        pool1: 172.10.1.1:8080
+        pool2: 172.10.1.2:8080
+        pool3: 172.10.1.3:8080
+    health:
+      - option httpchk GET /health
+      - http-check expect status 200
+
+  lb_service2:
+    hosts:
+      - node1
+      - node2
+    service: lb_service2
+    frontend:
+      - 192.168.1.200:8082
+    backend:
+      pool1: 172.10.1.1:8082
+      pool2: 172.10.1.2:8082
+      pool3: 172.10.1.3:8082
+
+  lb_service3:
+    service: lb_service3
+    frontend:
+      - 172.10.1.200:8084
+    backend:
+      pool1: 172.10.1.1:8084
+      pool2: 172.10.1.2:8084
+      pool3: 172.10.1.4:8084
