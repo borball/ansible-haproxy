@@ -1,0 +1,6 @@
+---
+- name: Ensure HAProxy is installed
+  package:
+    name: haproxy
+    state: present
+
