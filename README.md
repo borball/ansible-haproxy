@@ -11,7 +11,26 @@ This role  more focus on HAProxy configuration than installation, users may have
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Following are the default settings which can be customized based on the needs. 
+
+```yaml
+haproxy:
+  software: /usr/sbin/haproxy
+  conf: /etc/haproxy
+  sysconf: /etc/sysconfig
+  group: haproxy
+  user: haproxy
+  sock_location: /var/lib/haproxy
+  global:
+    maxconn: 32768
+  defaults:
+    retries: 2
+    maxconn: 8192
+    timeout:
+      connect: 3000
+      client: 10000
+      server: 10000
+```
 
 Dependencies
 ------------
@@ -70,7 +89,7 @@ You can define all HAProxy instances based on your needs, including the name, fr
 
 Download the role either with ansible galaxy or add the role as a git submodule in your own ansible project.
 
-Following is an example how to use the lbs and role. 
+Following is an example how to use the lbs.yml and role. 
 
 ```yaml
 - hosts: servers
