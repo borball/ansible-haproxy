@@ -2,8 +2,8 @@
 lbs:
   lb_service1:
     hosts:
-      - node1
-      - node2
+      - localhost
+      - CA-00001205
     service: lb_service1
     frontend:
       endpoint1: 192.168.1.200:8080
@@ -19,8 +19,8 @@ lbs:
 
   lb_service2:
     hosts:
-      - node1
-      - node2
+      - CA-00001205
+      - localhost
     service: lb_service2
     frontend:
       - 192.168.1.200:8082

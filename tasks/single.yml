@@ -1,13 +1,23 @@
 ---
-- name: Configure HAProxy instance {{ instance.service }}
-  debug:
-    msg: Configure HAProxy instance {{ instance.service }}
+- block:
+  - name: Skip the HAProxy setup on node {{ ansible_hostname }}
+    debug:
+      msg: hosts is defined in lbs.yml but not match with {{ ansible_hostname }}
+  when: instance.hosts is defined and ansible_hostname not in instance.hosts
 
-- name: Create required folder for {{ instance.service }}
-  file:
-    path: "{{ item }}"
-    state: directory
-  with_items:
-    - "{{ haproxy.conf }}/{{ instance.service }}"
-    - "{{ haproxy.sysconf }}/{{ instance.service }}"
-    - "{{ haproxy.sock_location }}/{{ instance.service }}"
+- block:
+  - name: Setup HAProxy instance {{ instance.service }} @ {{ ansible_hostname }}
+    debug:
+      msg: Configure HAProxy instance {{ instance.service }} @ {{ ansible_hostname }}
+
+  - name: Create required folder for {{ instance.service }}
+    file:
+      path: "{{ dir }}"
+      state: directory
+    with_items:
+      - "{{ haproxy.conf }}/{{ instance.service }}"
+      - "{{ haproxy.sysconf }}/{{ instance.service }}"
+      - "{{ haproxy.sock_location }}/{{ instance.service }}"
+    loop_control:
+      loop_var: dir
+  when: instance.hosts is not defined or ansible_hostname in instance.hosts

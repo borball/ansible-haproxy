@@ -1,9 +1,4 @@
 ---
-- name: Ensure HAProxy is installed
-  package:
-    name: haproxy
-    state: present
-
 - name: Provision configuration for specified load balancer only
   include_tasks: single.yml
   vars:
