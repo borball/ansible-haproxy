@@ -21,11 +21,64 @@ A list of other roles hosted on Galaxy should go here, plus any details in regar
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Prepare a yml file lbs.yml to define all the HAProxy instances, following is an example:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yaml
+---
+lbs:
+  lb_service1:
+    hosts:
+      - localhost
+      - CA-00001205
+    service: lb_service1
+    frontend:
+      endpoint1: 192.168.1.200:8080
+      endpoint2: 172.10.1.200:8080
+    backend:
+      pool:
+        pool1: 172.10.1.1:8080
+        pool2: 172.10.1.2:8080
+        pool3: 172.10.1.3:8080
+    health:
+      - option httpchk GET /health
+      - http-check expect status 200
+
+  lb_service2:
+    hosts:
+      - CA-00001205
+      - localhost
+    service: lb_service2
+    frontend:
+      - 192.168.1.200:8082
+    backend:
+      pool1: 172.10.1.1:8082
+      pool2: 172.10.1.2:8082
+      pool3: 172.10.1.3:8082
+
+  lb_service3:
+    service: lb_service3
+    frontend:
+      - 172.10.1.200:8084
+    backend:
+      pool1: 172.10.1.1:8084
+      pool2: 172.10.1.2:8084
+      pool3: 172.10.1.4:8084
+
+```
+
+You can define all HAProxy instances based on your needs, including the name, frontend, backend, health check, and hosts list etc.
+
+Download the role either with ansible galaxy or add the role as a git submodule in your own ansible project.
+
+Following is an example how to use the lbs and role. 
+
+```yaml
+- hosts: servers
+  vars_files:
+    - lbs.yml
+  roles:
+    - role: borball.haproxy
+```
 
 License
 -------
@@ -35,4 +88,3 @@ Apache-2.0
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
