@@ -21,6 +21,7 @@ haproxy:
   group: haproxy
   user: haproxy
   sock_location: /var/lib/haproxy
+  option: 'OPTIONS=\"-dS -dG -dV\"'
   global:
     maxconn: 32768
   defaults:
