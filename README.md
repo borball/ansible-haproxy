@@ -43,7 +43,6 @@ Example Playbook
 Prepare a yml file lbs.yml to define all the HAProxy instances, following is an example:
 
 ```yaml
----
 lbs:
   lb_service1:
     hosts:
@@ -51,8 +50,8 @@ lbs:
       - CA-00001205
     service: lb_service1
     frontend:
-      endpoint1: 192.168.1.200:8080
-      endpoint2: 172.10.1.200:8080
+      - 192.168.1.200:8080
+      - 172.10.1.200:8080
     backend:
       pool:
         pool1: 172.10.1.1:8080
@@ -61,6 +60,9 @@ lbs:
     health:
       - option httpchk GET /health
       - http-check expect status 200
+    stat:
+      enabled: yes
+      listen: 172.10.1.200:28080
 
   lb_service2:
     hosts:
@@ -70,19 +72,21 @@ lbs:
     frontend:
       - 192.168.1.200:8082
     backend:
-      pool1: 172.10.1.1:8082
-      pool2: 172.10.1.2:8082
-      pool3: 172.10.1.3:8082
+      pool:
+        pool1: 172.10.1.1:8082
+        pool2: 172.10.1.2:8082
+        pool3: 172.10.1.3:8082
 
   lb_service3:
     service: lb_service3
     frontend:
       - 172.10.1.200:8084
+      - 172.10.1.201:8084
     backend:
-      pool1: 172.10.1.1:8084
-      pool2: 172.10.1.2:8084
-      pool3: 172.10.1.4:8084
-
+      pool:
+        pool1: 172.10.1.1:8084
+        pool2: 172.10.1.2:8084
+        pool3: 172.10.1.4:8084
 ```
 
 You can define all HAProxy instances based on your needs, including the name, frontend, backend, health check, and hosts list etc.
