@@ -10,14 +10,42 @@
     debug:
       msg: Configure HAProxy instance {{ instance.service }} @ {{ ansible_hostname }}
 
+  - name: Ensure HAProxy is installed
+    package:
+      name: haproxy
+      state: present
+
   - name: Create required folder for {{ instance.service }}
     file:
       path: "{{ dir }}"
       state: directory
     with_items:
       - "{{ haproxy.conf }}/{{ instance.service }}"
-      - "{{ haproxy.sysconf }}/{{ instance.service }}"
       - "{{ haproxy.sock_location }}/{{ instance.service }}"
     loop_control:
       loop_var: dir
+
+  - name: Prevision {{ haproxy.conf }}/{{ instance.service }}/haproxy.cfg
+    template:
+      src: "{{ instance.template | default('haproxy.cfg.j2') }}"
+      dest: "{{ haproxy.conf }}/{{ instance.service }}/haproxy.cfg"
+
+  - name: Prevision {{ haproxy.sysconf }}/{{ instance.service | lower }}
+    copy:
+      dest: "{{ haproxy.sysconf }}/{{ instance.service |lower }}"
+      content: "{{ instance.option | default(haproxy.option) }}"
+
+  - name: Provision systemd file for {{ instance.service }}
+    template:
+      dest: "/usr/lib/systemd/system/{{ instance.service }}.service"
+      src: haproxy-systemd.service.j2
+
+  - name: Enable the systemd and restart
+    systemd:
+      name: "{{ instance.service }}.service"
+      daemon_reload: yes
+      state: restarted
+      enabled: yes
+    ignore_errors: yes
+
   when: instance.hosts is not defined or ansible_hostname in instance.hosts

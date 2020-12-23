@@ -20,11 +20,11 @@ defaults
     timeout client  {{ instance.defaults.timeout.client | default(10000) }}
     timeout server  {{ instance.defaults.timeout.server | default(10000) }}
 
-{% for frontend in lookup('dict', instance.frontend)|sort  %}
+{% for frontend in instance.frontend  %}
 
-frontend frontend-{{ frontend.name }}
+frontend frontend-{{ loop.index }}
     log global
-    bind {{ frontend.value }}
+    bind {{ frontend }}
     default_backend backend-{{ instance.service }}
 {% endfor %}
 
@@ -44,8 +44,7 @@ backend backend-{{ instance.service }}
     {{ hc }}
 {% endfor %}
 {% endif %}
-
-{% for server in lookup('dict', instance.backend.pool)|sort  %}
+{% for server in lookup('dict', instance.backend.pool)  %}
 {% if instance.backend.check is defined %}
     server {{ server.key }} {{ server.value }} weight 1 maxconn 2048 check {{ instance.backend.check }} inter 10000 rise 3 fall 3
 {% else %}
@@ -53,17 +52,19 @@ backend backend-{{ instance.service }}
 {% endif %}
 {% endfor %}
 
+{% if instance.stat.enabled | default(false) %}
 listen stats
-    bind *:{{ instance.stat }}
+    bind {{ instance.stat.listen }}
     mode http
-    stats {{ instance.stat.enable | "enable" }}
+    stats enable
     stats uri /
     stats hide-version
     stats refresh 10s
     stats admin if TRUE
     stats show-legends
     stats show-desc {{ instance.service }}
-{% for frontend in lookup('dict', instance.frontend)|sort  %}
-    stats scope frontend-{{ frontend.name }}
+{% for frontend in instance.frontend  %}
+    stats scope frontend-frontend frontend-{{ loop.index }}
 {% endfor %}
     stats scope backend-{{ instance.service }}
+{% endif %}

@@ -3,11 +3,11 @@ Description=HAProxy { instance.service }}
 After=syslog.target network.target
 
 [Service]
-Environment="CONFIG={{ haproxy.conf }}/{{ instance.service }}/haproxy.cfg" "PIDFILE=/run/{{ instance.pid }}"
-EnvironmentFile={{ haproxy.sysconf }}/{{ instance.pid }}
-ExecStartPre={{ haproxy.opt }}/{{ instance.service }}/{{ instance.pid }} -f $CONFIG -c -q
-ExecStart={{ haproxy.opt }}/{{ instance.service }}/{{ instance.pid }} -Ws -f $CONFIG -p $PIDFILE $OPTIONS
-ExecReload={{ haproxy.opt }}/{{ instance.service }}/{{ instance.pid }} -f $CONFIG -c -q
+Environment="CONFIG={{ haproxy.conf }}/{{ instance.service }}/haproxy.cfg" "PIDFILE=/run/{{ instance.service | lower }}"
+EnvironmentFile={{ haproxy.sysconf }}/{{ instance.service | lower }}
+ExecStartPre={{ haproxy.software }}/{{ instance.service }}/{{ instance.service | lower }} -f $CONFIG -c -q
+ExecStart={{ haproxy.software }}/{{ instance.service }}/{{ instance.service | lower }} -Ws -f $CONFIG -p $PIDFILE $OPTIONS
+ExecReload={{ haproxy.software }}/{{ instance.service }}/{{ instance.service | lower }} -f $CONFIG -c -q
 ExecReload=/bin/kill -USR2 $MAINPID
 KillMode=mixed
 Type=notify
