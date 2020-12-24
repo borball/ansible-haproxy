@@ -21,6 +21,7 @@
       state: directory
     with_items:
       - "{{ haproxy.conf }}/{{ instance.service }}"
+      - "{{ haproxy.sysconf }}"
       - "{{ haproxy.sock_location }}/{{ instance.service }}"
     loop_control:
       loop_var: dir
