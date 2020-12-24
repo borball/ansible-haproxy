@@ -1,27 +1,27 @@
 ---
 - block:
-  - name: Skip the HAProxy setup on node {{ ansible_hostname }}
+  - name: ({{ instance.service }})Skip the HAProxy setup on node {{ ansible_hostname }}
     debug:
       msg: hosts is defined in lbs.yml but not match with {{ ansible_hostname }}
   when: instance.hosts is defined and ansible_hostname not in instance.hosts
 
 - block:
-  - name: Setup HAProxy instance {{ instance.service }} @ {{ ansible_hostname }}
+  - name: ({{ instance.service }})Setup HAProxy instance {{ instance.service }} @ {{ ansible_hostname }}
     debug:
       msg: Configure HAProxy instance {{ instance.service }} @ {{ ansible_hostname }}
 
-  - name: Ensure HAProxy is installed
+  - name: ({{ instance.service }})Ensure HAProxy is installed
     package:
       name: haproxy
       state: present
 
-  - name: Stop and disable HAProxy
+  - name: ({{ instance.service }})Stop and disable HAProxy
     systemd:
       name: haproxy
       state: stopped
       enabled: no
 
-  - name: Create required folder for {{ instance.service }}
+  - name: ({{ instance.service }})Create required folder for {{ instance.service }}
     file:
       path: "{{ dir }}"
       state: directory
@@ -32,22 +32,22 @@
     loop_control:
       loop_var: dir
 
-  - name: Prevision {{ haproxy.conf }}/{{ instance.service }}/haproxy.cfg
+  - name: ({{ instance.service }})Prevision {{ haproxy.conf }}/{{ instance.service }}/haproxy.cfg
     template:
       src: "{{ instance.template | default('haproxy.cfg.j2') }}"
       dest: "{{ haproxy.conf }}/{{ instance.service }}/haproxy.cfg"
 
-  - name: Prevision {{ haproxy.sysconf }}/{{ instance.service | lower }}
+  - name: ({{ instance.service }})Prevision {{ haproxy.sysconf }}/{{ instance.service | lower }}
     copy:
       dest: "{{ haproxy.sysconf }}/{{ instance.service |lower }}"
       content: "{{ instance.option | default(haproxy.option) }}"
 
-  - name: Provision systemd file for {{ instance.service }}
+  - name: ({{ instance.service }})Provision systemd file for {{ instance.service }}
     template:
       dest: "/usr/lib/systemd/system/{{ instance.service }}.service"
       src: haproxy-systemd.service.j2
 
-  - name: Enable the systemd and restart
+  - name: ({{ instance.service }})Enable the systemd and restart
     systemd:
       name: "{{ instance.service }}.service"
       daemon_reload: yes
