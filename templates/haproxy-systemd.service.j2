@@ -5,9 +5,9 @@ After=syslog.target network.target
 [Service]
 Environment="CONFIG={{ haproxy.conf }}/{{ instance.service }}/haproxy.cfg" "PIDFILE=/run/{{ instance.service | lower }}"
 EnvironmentFile={{ haproxy.sysconf }}/{{ instance.service | lower }}
-ExecStartPre={{ haproxy.software }}/{{ instance.service }}/{{ instance.service | lower }} -f $CONFIG -c -q
-ExecStart={{ haproxy.software }}/{{ instance.service }}/{{ instance.service | lower }} -Ws -f $CONFIG -p $PIDFILE $OPTIONS
-ExecReload={{ haproxy.software }}/{{ instance.service }}/{{ instance.service | lower }} -f $CONFIG -c -q
+ExecStartPre={{ haproxy.software }} -f $CONFIG -c -q
+ExecStart={{ haproxy.software }} -Ws -f $CONFIG -p $PIDFILE $OPTIONS
+ExecReload={{ haproxy.software }} -f $CONFIG -c -q
 ExecReload=/bin/kill -USR2 $MAINPID
 KillMode=mixed
 Type=notify
