@@ -15,6 +15,12 @@
       name: haproxy
       state: present
 
+  - name: Stop and disable HAProxy
+    systemd:
+      name: haproxy
+      state: stopped
+      enabled: no
+
   - name: Create required folder for {{ instance.service }}
     file:
       path: "{{ dir }}"
