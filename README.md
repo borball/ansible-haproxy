@@ -113,7 +113,6 @@ Each HAProxy instance defined in lbs.yml will have a separated set of configurat
 Use systemctl status {instance_name}.service to check status of HAProxy instance, for example:
 
 ```shell
-borball@ubuntu:~/github/ansible-test$ systemctl status lb_service3
 borball@ubuntu:~/github/ansible-test$ systemctl status lb_service3               
 [0m lb_service3.service - HAProxy lb_service3
      Loaded: loaded (/lib/systemd/system/lb_service3.service; enabled; vendor preset: enabled)
