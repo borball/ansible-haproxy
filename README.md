@@ -36,7 +36,7 @@ haproxy:
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None.
 
 Example Playbook
 ----------------
@@ -102,6 +102,33 @@ Following is an example how to use the lbs.yml and role.
     - lbs.yml
   roles:
     - role: borball.haproxy
+```
+
+Each HAProxy instance defined in lbs.yml will have a separated set of configurations including: 
+
+- /etc/haproxy/{instance_name}/haproxy.cfg
+- /etc/sysconfig/{instance_name}
+- /lib/systemd/system/{instance_name}.service
+
+Use systemctl status {instance_name}.service to check its status, for example:
+
+```shell
+borball@ubuntu:~/github/ansible-test$ systemctl status lb_service3
+[0m lb_service3.service - HAProxy lb_service3
+     Loaded: loaded (/lib/systemd/system/lb_service3.service; enabled; vendor preset: enabled)
+     Active: active (running) since Thu 2020-12-24 16:12:37 EST; 19h ago
+    Process: 3911852 ExecStartPre=/usr/sbin/haproxy -f $CONFIG -c -q (code=exited, status=0/SUCCESS)
+   Main PID: 3911853 (haproxy)
+      Tasks: 2 (limit: 4620)
+     Memory: 5.9M
+     CGroup: /system.slice/lb_service3.service
+             3911853 /usr/sbin/haproxy -Ws -f /etc/haproxy/lb_service3/haproxy.cfg -p /run/lb_service3 -dS -dG -dV
+             3911860 /usr/sbin/haproxy -Ws -f /etc/haproxy/lb_service3/haproxy.cfg -p /run/lb_service3 -dS -dG -dV
+
+Dec 24 16:12:37 ubuntu systemd[1]: Starting HAProxy { instance.service }}...
+Dec 24 16:12:37 ubuntu haproxy[3911853]: [NOTICE] 358/211237 (3911853) : New worker #1 (3911860) forked
+Dec 24 16:12:37 ubuntu systemd[1]: Started HAProxy { instance.service }}.
+Dec 24 16:12:47 ubuntu haproxy[3911860]: [WARNING] 358/211247 (3911860) : Server backend-lb_service3/pool1 is DOWN, reason: Layer4 timeout, check duration: 1>Dec 24 16:12:51 ubuntu haproxy[3911860]: [WARNING] 358/211251 (3911860) : Server backend-lb_service3/pool2 is DOWN, reason: Layer4 timeout, check duration: 1>Dec 24 16:12:54 ubuntu haproxy[3911860]: [WARNING] 358/211254 (3911860) : Server backend-lb_service3/pool3 is DOWN, reason: Layer4 timeout, check duration: 1>Dec 24 16:12:54 ubuntu haproxy[3911860]: [ALERT] 358/211254 (3911860) : backend 'backend-lb_service3' has no server available!
 ```
 
 License
