@@ -45,25 +45,25 @@ Prepare a yml file lbs.yml to define all the HAProxy instances, following is an 
 
 ```yaml
 lbs:
-  lb_service1:
-    hosts:
+  lb_service1: # haproxy instance name
+    hosts: # (optional) on which nodes the haproxy shall be installed and configured
       - localhost
       - CA-00001205
-    service: lb_service1
-    frontend:
+    service: lb_service1 # used as name of systemd
+    frontend: # can have multiple frontend
       - 192.168.1.200:8080
       - 172.10.1.200:8080
     backend:
-      pool:
+      pool: # backend pool
         pool1: 172.10.1.1:8080
         pool2: 172.10.1.2:8080
         pool3: 172.10.1.3:8080
-    health:
+    health: # health check for the backend pool members
       - option httpchk GET /health
       - http-check expect status 200
-    stat:
+    stat: # whether to enable the stat page 
       enabled: yes
-      listen: 172.10.1.200:28080
+      listen: 172.10.1.200:28080 # stat page listening interface and port
 
   lb_service2:
     hosts:
