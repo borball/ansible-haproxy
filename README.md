@@ -92,6 +92,9 @@ lbs:
 
 You can define all HAProxy instances based on your needs, including the name, frontend, backend, health check, and hosts list etc.
 
+- If hosts presents, HAProxy will be installed and configured only on the nodes whose hostname match with the hosts defined in lbs.yml.
+- Otherwise HAProxy will be installed and configured on all the nodes defined in the inventory.
+
 Download the role either with ansible galaxy or add the role as a git submodule in your own ansible project.
 
 Following is an example how to use the lbs.yml and role. 
