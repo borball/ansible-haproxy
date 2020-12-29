@@ -58,10 +58,10 @@ lbs:
         pool1: 172.10.1.1:8080
         pool2: 172.10.1.2:8080
         pool3: 172.10.1.3:8080
-    health: # health check for the backend pool members
+    health: # (optional) health check for the backend pool members
       - option httpchk GET /health
       - http-check expect status 200
-    stat: # whether to enable the stat page 
+    stat: # (optional) whether to enable the stat page, by default stat is disabled 
       enabled: yes
       listen: 172.10.1.200:28080 # stat page listening interface and port
 
