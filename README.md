@@ -87,13 +87,14 @@ lbs:
       pool:
         pool1: 172.10.1.1:8084
         pool2: 172.10.1.2:8084
-        pool3: 172.10.1.4:8084
+        pool3: 172.10.1.3:8084
 ```
 
 You can define all HAProxy instances based on your needs, including the name, frontend, backend, health check, and hosts list etc.
 
 - If hosts presents in lbs.yml, HAProxy will be installed and configured only on the nodes whose hostname match with the hosts defined in lbs.yml.
 - If no hosts is specified in lbs.yml, HAProxy will be installed and configured on all the nodes defined in the inventory.
+- If you want to enable HAProxy stat page, set stat.enabled as true and set the listening IP and port. 
 
 Download the role either with ansible galaxy or add the role as a git submodule in your own ansible project.
 
