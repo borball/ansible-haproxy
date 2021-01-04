@@ -50,6 +50,7 @@ lbs:
       - localhost
       - CA-00001205
     service: lb_service1 # used as name of systemd
+    mode: http # (optional) http or tcp, default is http
     frontend: # can have multiple frontend
       - 192.168.1.200:8080
       - 172.10.1.200:8080
@@ -58,6 +59,8 @@ lbs:
         pool1: 172.10.1.1:8080
         pool2: 172.10.1.2:8080
         pool3: 172.10.1.3:8080
+      balance: roundrobin #(optional) roundrobin, leastconn or source
+      check: check-ssl ssl-min-ver TLSv1.0 verify none #(optional) check HAProxy guide to get all supported checks
     health: # (optional) health check for the backend pool members
       - option httpchk GET /health
       - http-check expect status 200
